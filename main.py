@@ -411,6 +411,24 @@ def delete_gift():
   if db_gift is None:
     print("No gift with that ID found")
     return
+  
+  print("Gift details: ")
+  gift_print(db_gift)
+
+  confirm = confirm_choice("","Delete this gift? (y/n): ")
+
+  if not confirm:
+    print("Nothing deleted.")
+
+  result = MYDB.gifts.delete_one({ "_id": ObjectId(gift_id_to_find) })
+
+  if result.deleted_count == 1:
+    print("Gift deleted.")
+  else:
+    print("Delete failed.")
+
+
+  
 
 def delete_person():
   choice = confirm_choice("","Do you want to list/search people first? (y/n):")
@@ -485,6 +503,8 @@ def main():
         delete_gift()
       case "7":
         delete_person()
+      case "8":
+        delete_gift()
       case _:
         print("Invalid choice")
 
