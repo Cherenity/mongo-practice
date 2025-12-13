@@ -159,10 +159,8 @@ def add_person()->None:
 def assign_gifts():
   pass
 
-#------------------------------------------------- 
 
-#READ
-#------------------------------------------------- 
+#READ ------------------------------------------------- 
 def list_gifts()->None:
   gifts = list(MYDB.gifts.find())
   if not gifts:
@@ -176,6 +174,17 @@ def list_gifts()->None:
       print(f"{'Cateory':>10}: {gift['category']}")
       print(f"{'Available':>10}: {gift['available']}")
       print()
+
+def list_people_print():
+  print(
+"""
+Commands:
+        0) List all
+        1) Search by a name
+        2) Search by email
+"""
+)
+
 
 def list_people()->None:
   people = list(MYDB.people.find())
@@ -198,15 +207,18 @@ def list_assigned_gifts():
 
 #------------------------------------------------- 
 
-#UPDATE
-#------------------------------------------------- 
+#UPDATE ------------------------------------------------- 
 def edit_people_print():
-  print("\n" + "Commands: " + "\n" \
-  "\t0) " + "Quit editing" + "\n" \
-  "\t1) " + "Edit name"  + "\n"\
-  "\t2) " + "Edit email" + "\n" \
-  "\t3) " + "Edit age" + "\n" 
-  )
+    print(
+"""
+Commands:
+        0) Quit editing
+        1) Edit name
+        2) Edit email
+        3) Edit age
+"""
+)
+
 
 
 def edit_person():
@@ -259,21 +271,25 @@ def delete_person():
 #------------------------------------------------- 
 
 def print_commands()->None:
-  print("\n" + "Commands: " + "\n" \
-  "\t0) " + "Exit program " + "\n" \
-  "\t1) " + "List people"  + "\n"\
-  "\t2) " + "List gifts" + "\n" \
-  "\t3) " + "Add a person" + "\n" \
-  "\t4) " + "Add a gift" + "\n" \
-  "\t5) " + "Edit person details" + "\n" \
-  "\t6) " + "Edit gift details" + "\n" \
-  "\t7) " + "Delete a person" + "\n" \
-  "\t8) " + "Delete a gift" + "\n" 
-  )
+  print(
+"""
+Commands:
+        0) Exit program
+        1) List people
+        2) List gifts
+        3) Add a person
+        4) Add a gift
+        5) Edit person details
+        6) Edit gift details
+        7) Delete a person
+        8) Delete a gift     
+"""
+)
 
 def test():
-  print("TEST PROGRAM")
-  edit_person()
+  list_people_print()
+  edit_people_print()
+  print_commands()
 
 def main():
   print("Welcome! 🎅🎁🎄 This is my practise project ~")
