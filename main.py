@@ -36,7 +36,7 @@ def add_gift():
     result = MYDB.people.insert_one(gift)
 
 #CAN BE MODIFIED LATER (add ❌ ?)
-def name_checks(name: str)->bool:
+def name_checks(name: str) -> bool:
   if not name:
       print("First name cannot be empty")
       return False  
@@ -52,7 +52,7 @@ def name_checks(name: str)->bool:
   print("✅ Name is valid")
   return True
 
-def email_check(email: str)->bool:
+def email_check(email: str) -> bool:
   if not email:
     print("email address cannot be empty")
     return False
@@ -97,6 +97,20 @@ def get_valid_name(prompt1: str = "Enter first name: ",
   full_name = first_name + " " + last_name
   print(f"Full name is: {full_name}")
   return full_name
+
+def confirm_choice(print_text: str) -> bool:
+  print(print_text)
+  while True:
+    choice = input("Are you satisfied with your choice? (y/n):").strip().lower()
+    if choice == "y":
+      return True
+    elif choice == "n":
+      return False 
+    else:
+      print("Invalid choice")
+  
+
+
 
 def add_person()->None:
 
