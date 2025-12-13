@@ -36,7 +36,7 @@ def add_gift():
     result = MYDB.people.insert_one(gift)
 
 #CAN BE MODIFIED LATER (add ❌ ?)
-def name_checks(name: str) -> bool:
+def name_check(name: str) -> bool:
   if not name:
       print("First name cannot be empty")
       return False  
@@ -86,12 +86,12 @@ def get_valid_name(prompt1: str = "Enter first name: ",
                    ) -> str:
   while True:
     first_name = input(prompt1).strip().title()
-    if name_checks(first_name):
+    if name_check(first_name):
       break
     
   while True:
     last_name = input(prompt2).strip().title()
-    if name_checks(last_name):
+    if name_check(last_name):
       break
   
   full_name = first_name + " " + last_name
@@ -110,15 +110,10 @@ def confirm_choice(print_text: str) -> bool:
       print("Invalid choice")
   
 
-
-
 def add_person()->None:
-
+  cancel_message = "Person creation was cancelled..."
+  
   full_name = get_valid_name()
-
-      # check = input("Want to continue yes|no: ") 
-  # if check == "no":#HARKITAAN JOTAIN myöhemmin oma funktio?
-  #   return
 
   while True:
     email = input("Enter email: ").strip().lower()
@@ -134,13 +129,24 @@ def add_person()->None:
     except ValueError:
       print("Age needs to be a number between 0-100")
   
-  person = {"name" : "", "email" : "", "age" : ""}
-  person["name"] = full_name
-  person["email"] = email
-  person["age"] = age
+  person = {
+    "name" : full_name, 
+    "email" : email, 
+    "age" : age
+    }
   
-  print(person.values())
+  person_summary = (
+    f"{'Name':<5}: {person['name']}\n"
+    f"{'Email':<5}: {person['email']}\n"
+    f"{'Age':<5}: {person['age']}"
+    )
 
+  confirmed = confirm_choice(f"\nAdd a new person:\n{person_summary}\n")
+
+  if not confirmed:
+    print(cancel_message)
+    return
+  
   is_existing = MYDB.people.find_one({"email": person["email"]})
 
   if is_existing:
@@ -222,11 +228,11 @@ def edit_people():
       case "1":
         while True:
           first_name = input("Enter first name: ").strip().title()
-          if name_checks(first_name):
+          if name_check(first_name):
             break
         while True:
           last_name = input("Enter first name: ").strip().title()
-          if name_checks(last_name):
+          if name_check(last_name):
             break
         
         
