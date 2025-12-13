@@ -21,7 +21,6 @@ def title_checks():
 def price_checks():
   pass
 
-
 def add_gift():
   gift = {"title" : "", "price" : "", "category" : "", "available": ""}
 
@@ -125,10 +124,13 @@ def get_valid_age(prompt: str = "Enter age: ") -> int:
         print("Age needs to be a number between 0-100")
     return age
 
-def confirm_choice(print_text: str) -> bool:
-  print(print_text)
+def confirm_choice(print_text:str = "", choice_text:str = "Are you satisfied with your choice? (y/n): ") -> bool:
+
+  if print_text:
+    print(print_text)
+  
   while True:
-    choice = input("Are you satisfied with your choice? (y/n): ").strip().lower()
+    choice = input(choice_text).strip().lower()
     if choice == "y":
       return True
     elif choice == "n":
@@ -136,12 +138,11 @@ def confirm_choice(print_text: str) -> bool:
     else:
       print("Invalid choice")
 
-def add_person()->None:
+def add_person() -> None:
   cancel_message = "Person was not added..."
   full_name = get_valid_name()
   email = get_valid_email()
   age = get_valid_age()
-
 
   person = {
     "name" : full_name, 
@@ -265,7 +266,6 @@ Edit person commands:
 """)
 
 def edit_person():
-
   choice = confirm_choice("Do you want to list/search people first?")
   if choice:
     list_people()
@@ -313,7 +313,6 @@ def edit_person():
     case _:
       print("Invalid choice")
 
-
 def edit_gifts():
   pass
 
@@ -322,9 +321,34 @@ def delete_gift():
   pass
 
 def delete_person():
-  choice = confirm_choice("Do you want to list/search people first?")
+  choice = confirm_choice("","Do you want to list/search people first? (y/n):")
   if choice:
     list_people()
+  person_id_to_find = input("Please give a person ID to dekelete: ")
+  try:
+    db_person = MYDB.people.find_one({ "_id": ObjectId(person_id_to_find) })
+  except InvalidId:
+    print("Invalid ID format")
+    return
+  if db_person is None: 
+    print("No person with that ID found")
+    return
+  
+  print("Person details: ")
+  person_print(db_person)
+
+  confirm = confirm_choice("","Delete this person? (y/n): ")
+
+  if not confirm:
+    print("Nothing deleted.") 
+
+  result = MYDB.people.delete_one({ "_id": ObjectId(person_id_to_find) })
+
+  if result.deleted_count == 1:
+    print("Person deleted.")
+  else:
+    print("Delete failed.")
+
 
 
 def print_commands()->None:
@@ -344,10 +368,8 @@ Commands:
 )
 
 def test():
-  list_people_print()
-  edit_person_menu_prints()
-  print_commands()
-
+  # pick_person_id_by_name()
+  pass
 def main():
   print("Welcome! 🎅🎁🎄 This is my practise project ~")
 
@@ -369,6 +391,10 @@ def main():
         add_gift() 
       case "5":
         edit_person()
+      case "6":
+        delete_gift()
+      case "7":
+        delete_person()
       case _:
         print("Invalid choice")
 
