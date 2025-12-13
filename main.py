@@ -36,7 +36,7 @@ def add_gift():
     result = MYDB.people.insert_one(gift)
 
 #CAN BE MODIFIED LATER (add ❌ ?)
-def name_check(name: str) -> bool:
+def name_check(name: str, is_first_name: bool | None = None) -> bool:
   if not name:
       print("First name cannot be empty")
       return False  
@@ -49,7 +49,12 @@ def name_check(name: str) -> bool:
   if name[0] in FORBIDDEN_START_CHARS:
       print("Name cannot start with this character")
       return False
-  print("✅ Name is valid")
+  if is_first_name is True:
+    print("✅ First name is valid")
+  elif is_first_name is False:
+    print("✅ Last name is valid")
+  else:
+    print("✅ Name is valid")
   return True
 
 def email_check(email: str) -> bool:
@@ -86,12 +91,12 @@ def get_valid_name(prompt1: str = "Enter first name: ",
                    ) -> str:
   while True:
     first_name = input(prompt1).strip().title()
-    if name_check(first_name):
+    if name_check(first_name, True):
       break
     
   while True:
     last_name = input(prompt2).strip().title()
-    if name_check(last_name):
+    if name_check(last_name, False):
       break
   
   full_name = first_name + " " + last_name
@@ -101,7 +106,7 @@ def get_valid_name(prompt1: str = "Enter first name: ",
 def confirm_choice(print_text: str) -> bool:
   print(print_text)
   while True:
-    choice = input("Are you satisfied with your choice? (y/n):").strip().lower()
+    choice = input("Are you satisfied with your choice? (y/n): ").strip().lower()
     if choice == "y":
       return True
     elif choice == "n":
@@ -124,10 +129,12 @@ def add_person()->None:
     try:
       age = int(age)
       if 0 <= age <= 100:
-        break  
+        break
+      else:
+        print("Age needs to be a number between 0-100")  
     except ValueError:
       print("Age needs to be a number between 0-100")
-  
+
   person = {
     "name" : full_name, 
     "email" : email, 
@@ -179,27 +186,62 @@ def list_people_print():
   print(
 """
 Commands:
-        0) List all
-        1) Search by a name
-        2) Search by email
+        0) Quit listing
+        1) List all
+        2) Search by full name
+        3) Search by partial name
 """
 )
 
 
-def list_people()->None:
-  people = list(MYDB.people.find())
-  print(len(people))
+def person_print(person:dict) -> None:
+  print(f"{'ID':>10}: {person['_id']}")
+  print(f"{'Title':>10}: {person['name']}")
+  print(f"{'Price':>10}: {person['email']}")
+  print(f"{'Age':>10}: {person['age']}")
 
+def list_people() -> None:
+  people = list(MYDB.people.find())
   if not people:
-    print("Not a single person found")
-  else:
-    print(f"Person count {len(people)}\n")
-    for person in people:
-      print(f"{'ID':>10}: {person['_id']}")
-      print(f"{'Title':>10}: {person['name']}")
-      print(f"{'Price':>10}: {person['email']}")
-      print(f"{'Age':>10}: {person['age']}")
-      print()
+    print("No persons found in the database.")
+    return
+  
+  while True:
+    list_people_print()
+    choice = input("Choose an option: ").strip()
+
+    match choice:
+      case "0":
+        break
+      case "1":
+        print(f"Person count {len(people)}\n")
+        for person in people:
+          person_print(person)
+          print()  
+      case "2":
+        print("First, complete the name check.")
+        full_name = get_valid_name()
+        filtered_people = [p for p in people if p["name"] == full_name]
+        if not filtered_people:
+          print("No people found with the name " + full_name)
+        else:
+          print(f"Person count {len(filtered_people)}\n")
+          for person in filtered_people: 
+            person_print(person)
+            print()
+      case "3":
+        partial_name = input("Please give a partial name: ").strip().lower()
+        filtered_people = [p for p in people if partial_name in p["name"].lower()]
+        if not filtered_people:
+          print(f"No name contains'{partial_name}'.")
+        else:
+          print(f"Person count {len(filtered_people)}\n")
+          for person in filtered_people: 
+              person_print(person)
+              print()
+      case _:
+        print("Invalid choice")
+
 
 def list_assigned_gifts():
   ## BONUS | needs aggregated function
@@ -220,7 +262,6 @@ Commands:
 )
 
 
-
 def edit_person():
   # email = input("Anna henkilön sähköpostiosoite: ")
   # db_person = MYDB.people.find_one({"email": email})
@@ -231,10 +272,10 @@ def edit_person():
   while True:
     edit_people_print()
     choice = input("What do you want to edit? ").strip()
-    if choice == "0":
-      break
 
     match choice:
+      case "0":
+        break
       case "1":
             name = get_valid_name()
             print(name)
@@ -298,11 +339,10 @@ def main():
     print_commands()
     choice = input("Choose an option: ")
     
-    if choice == "0":
-      print("Exiting program...")
-      break
-
     match choice:
+      case "0":
+        print("Exiting program...")
+        break
       case "1":
         list_people()
       case "2":
