@@ -22,11 +22,6 @@ GIFT_CATEGORIES = [
 
 """CRUD = Create, Read, Update, Delete"""
 
-# ✔️ Using an ObjectId object will work Esimerkki
-# db.books.find_one({ "_id": ObjectId(book_id_to_find) })
-
-#CREATE
-#-------------------------------------------------
 def get_valid_title()->str:
   while True:
     title = input("Gift title: ").strip()
@@ -113,7 +108,6 @@ def add_gift() -> None:
     result = MYDB.gifts.insert_one(gift)
     print(f"Gift added with id: {result.inserted_id}")
 
-#CAN BE MODIFIED LATER (add ❌ ?)
 def name_check(name: str, is_first_name: bool | None = None) -> bool:
   if not name:
       print("First name cannot be empty")
@@ -247,20 +241,18 @@ def add_person() -> None:
     result = MYDB.people.insert_one(person)
     print(result.inserted_id)
 
-#BONUS
+# LATER: Assign gifts using bulk insert (reset collection first) maybe
 def assign_gifts():
   pass
-
-#READ -------------------------------------------------
 
 def gift_print(gift:dict) -> None:
     print(f"{'ID':>10}: {gift['_id']}")
     print(f"{'Title':>10}: {gift['title']}")
-    print(f"{'Price':>10}: {gift['price']}")
+    print(f"{'Price':>10}: {gift['price']} €")
     print(f"{'Cateory':>10}: {gift['category']}")
     print(f"{'Available':>10}: {gift['available']}")
 
-def list_gifts()->None:
+def list_gifts() -> None:
   gifts = list(MYDB.gifts.find())
   if not gifts:
     print("No gifts found")
@@ -270,7 +262,7 @@ def list_gifts()->None:
       gift_print(gift)
       print()
 
-def list_people_print()->None:
+def list_people_print() -> None:
   print(
 """
 List/search people commands:
@@ -329,12 +321,11 @@ def list_people() -> None:
       case _:
         print("Invalid choice")
 
+# LATER: needs aggregated function
 def list_assigned_gifts():
-  ## BONUS | needs aggregated function
   pass
 
-#UPDATE -------------------------------------------------
-def edit_person_menu_prints(person: dict)->None:
+def edit_person_commands(person: dict) -> None:
   print("\nCurrent person details: ")
   person_print(person)
   print(
@@ -346,7 +337,7 @@ Edit person commands:
         3) Edit age
 """)
 
-def edit_person():
+def edit_person() -> None:
   choice = confirm_choice("Do you want to list/search people first?")
   if choice:
     list_people()
@@ -366,7 +357,7 @@ def edit_person():
     print("No person with that ID found")
     return
 
-  edit_person_menu_prints(db_person)
+  edit_person_commands(db_person)
   edit_choice = input("What do you want to edit? ").strip()
 
   match edit_choice:
@@ -394,11 +385,69 @@ def edit_person():
     case _:
       print("Invalid choice")
 
-def edit_gifts():
-  pass
+def edit_gift_commands(gift: dict) -> None:
+  print("\nCurrent gift details: ")
+  gift_print(gift)
+  print(
+"""
+Edit gift commands:
+        0) Nothing
+        1) Edit title
+        2) Edit price
+        3) Edit category
+        4) Edit availablity
+""")
 
-#DELETE-------------------------------------------------
-def delete_gift():
+def edit_gifts() -> None:
+  choice = confirm_choice("","Do you want to list all gifts first? (y/n):")
+  if choice:
+    list_gifts()
+  gift_id_to_find = input("Please give a gift ID to find: ")
+  
+  try:
+    db_gift = MYDB.gifts.find_one({ "_id": ObjectId(gift_id_to_find) })
+  except InvalidId:
+    print("Invalid ID format")
+    return
+  if db_gift is None:
+    print("No gift with that ID found")
+    return
+  
+  edit_gift_commands(db_gift)
+  edit_choice = input("What do you want to edit? ").strip()
+
+  match edit_choice:
+    case "0":
+      print("No changes made.")
+    case "1":
+      title = get_valid_title()
+      MYDB.gifts.update_one(
+        { "_id": ObjectId(gift_id_to_find) },
+        { "$set": { "title": title } }
+      )
+    case "2":
+      price = get_valid_price()
+      MYDB.gifts.update_one(
+        { "_id": ObjectId(gift_id_to_find) },
+        { "$set": { "price": price } }  
+      )   
+    case "3":
+      category = get_valid_category()
+      MYDB.gifts.update_one(
+        { "_id": ObjectId(gift_id_to_find) },
+        { "$set": { "category": category } }
+      )
+    case "4":
+      availability = get_valid_availability()
+      MYDB.gifts.update_one(
+        { "_id": ObjectId(gift_id_to_find) },
+        { "$set": { "available": availability } }
+      )
+  
+    case _:
+      print("Invalid choice")
+
+def delete_gift() -> None:
   choice = confirm_choice("","Do you want to list all gifts first? (y/n):")
   if choice:
     list_gifts()
@@ -427,10 +476,7 @@ def delete_gift():
   else:
     print("Delete failed.")
 
-
-  
-
-def delete_person():
+def delete_person() -> None:
   choice = confirm_choice("","Do you want to list/search people first? (y/n):")
   if choice:
     list_people()
@@ -459,7 +505,7 @@ def delete_person():
   else:
     print("Delete failed.")
 
-def print_commands()->None:
+def print_commands()-> None:
   print(
 """
 Commands:
@@ -500,7 +546,7 @@ def main():
       case "5":
         edit_person()
       case "6":
-        delete_gift()
+        edit_gifts()
       case "7":
         delete_person()
       case "8":
