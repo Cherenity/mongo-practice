@@ -12,7 +12,8 @@ FORBIDDEN_START_CHARS = "'_-"
 # ✔️ Using an ObjectId object will work Esimerkki
 # db.books.find_one({ "_id": ObjectId(book_id_to_find) })
 
-#Create
+#CREATE
+#------------------------------------------------- 
 def add_gift():
   gift = {"title" : "", "price" : "", "category" : "", "available": ""}
 
@@ -124,7 +125,10 @@ def add_person()->None:
 def assign_gifts():
   pass
 
-#Read
+#------------------------------------------------- 
+
+#READ
+#------------------------------------------------- 
 def list_gifts()->None:
   gifts = list(MYDB.gifts.find())
   if not gifts:
@@ -132,10 +136,11 @@ def list_gifts()->None:
   else:
     print("Gits\n")
     for gift in gifts:
-      print(f"Title: {gift['title']}")
-      print(f"Price: {gift['price']}")
-      print(f"Cateory: {gift['category']}")
-      print(f"Available: {gift['available']}")
+      print(f"{'ID':>10}: {gift['_id']}")
+      print(f"{'Title':>10}: {gift['title']}")
+      print(f"{'Price':>10}: {gift['price']}")
+      print(f"{'Cateory':>10}: {gift['category']}")
+      print(f"{'Available':>10}: {gift['available']}")
       print()
 
 def list_people()->None:
@@ -147,18 +152,21 @@ def list_people()->None:
   else:
     print(f"Person count {len(people)}\n")
     for person in people:
-      print(f"Title: {person['name']}")
-      print(f"Price: {person['email']}")
-      print(f"Cateory: {person['age']}")
-      print("--------------------------------------")
+      print(f"{'ID':>10}: {person['_id']}")
+      print(f"{'Title':>10}: {person['name']}")
+      print(f"{'Price':>10}: {person['email']}")
+      print(f"{'Age':>10}: {person['age']}")
+      print()
 
 def list_assigned_gifts():
   ## BONUS | needs aggregated function
   pass
 
-#Update
+#------------------------------------------------- 
+
+#UPDATE
+#------------------------------------------------- 
 def edit_people():
-  pass
   email = input("Anna henkilön sähköpostiosoite: ")
 
   db_person = MYDB.people.find_one({"email": email})
@@ -166,6 +174,9 @@ def edit_people():
   if not db_person:
     print("No person with that email found")
     return
+  
+
+
   
   # check haluuko vaihtaa puuttuu vielä ja tarkistusket
   name = input("New name: ").strip().title()
@@ -179,12 +190,17 @@ def edit_people():
 def edit_gifts():
   pass
 
-#Delete
+#------------------------------------------------- 
+
+#DELETE
+#------------------------------------------------- 
 def delete_gift():
   pass
 
 def delete_person():
   pass
+
+#------------------------------------------------- 
 
 def print_commands()->None:
   print("\n" + "Commands: " + "\n" \
@@ -203,7 +219,6 @@ def test():
 def main():
   print("Welcome! 🎅🎁🎄 This is my practise project ~")
 
-
   while True:
     print_commands()
     choice = input("Choose an option: ")
@@ -221,6 +236,9 @@ def main():
         add_person()
       case "4":
         add_gift() 
+      case "5":
+        edit_people()
+      
       case _:
         print("Invalid choice")
 
