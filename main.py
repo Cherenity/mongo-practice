@@ -14,6 +14,12 @@ FORBIDDEN_START_CHARS = "'_-"
 
 #CREATE
 #------------------------------------------------- 
+def title_checks():
+  pass
+def price_checks():
+  pass
+
+
 def add_gift():
   gift = {"title" : "", "price" : "", "category" : "", "available": ""}
 
@@ -75,22 +81,30 @@ def email_check(email: str)->bool:
   print("✅ Email is valid")
   return True
 
-def add_person()->None:
-
+def get_valid_name(prompt1: str = "Enter first name: ", 
+                   prompt2: str = "Enter last name: "
+                   ) -> str:
   while True:
-    first_name = input("Enter first name: ").strip().title()
+    first_name = input(prompt1).strip().title()
     if name_checks(first_name):
       break
+    
+  while True:
+    last_name = input(prompt2).strip().title()
+    if name_checks(last_name):
+      break
+  
+  full_name = first_name + " " + last_name
+  print(f"Full name is: {full_name}")
+  return full_name
 
-  # check = input("Want to continue yes|no: ") 
+def add_person()->None:
+
+  full_name = get_valid_name()
+
+      # check = input("Want to continue yes|no: ") 
   # if check == "no":#HARKITAAN JOTAIN myöhemmin oma funktio?
   #   return
-
-  while True:
-    last_name = input("Enter last name: ").strip().title()
-    if name_checks(last_name):
-      full_name = first_name + " " + last_name
-      break
 
   while True:
     email = input("Enter email: ").strip().lower()
@@ -121,6 +135,7 @@ def add_person()->None:
     result = MYDB.people.insert_one(person)
     print(result.inserted_id)
  
+
 #BONUS
 def assign_gifts():
   pass
@@ -142,6 +157,7 @@ def list_gifts()->None:
       print(f"{'Cateory':>10}: {gift['category']}")
       print(f"{'Available':>10}: {gift['available']}")
       print()
+
 
 def list_people()->None:
   people = list(MYDB.people.find())
@@ -166,26 +182,55 @@ def list_assigned_gifts():
 
 #UPDATE
 #------------------------------------------------- 
+def edit_people_print():
+  print("\n" + "Commands: " + "\n" \
+  "\t0) " + "Quit editing" + "\n" \
+  "\t1) " + "Edit name"  + "\n"\
+  "\t2) " + "Edit email" + "\n" \
+  "\t3) " + "Edit age" + "\n" 
+  )
+
+
 def edit_people():
-  email = input("Anna henkilön sähköpostiosoite: ")
+  # email = input("Anna henkilön sähköpostiosoite: ")
+  # db_person = MYDB.people.find_one({"email": email})
+  # if not db_person:
+  #   print("No person with that email found")
+  #   return
 
-  db_person = MYDB.people.find_one({"email": email})
-  
-  if not db_person:
-    print("No person with that email found")
-    return
-  
+  while True:
+    edit_people_print()
+    choice = input("What do you want to edit? ").strip()
+    if choice == "0":
+      break
 
+    match choice:
+      case "1":
+        while True:
+          first_name = input("Enter first name: ").strip().title()
+          if name_checks(first_name):
+            break
+        while True:
+          last_name = input("Enter first name: ").strip().title()
+          if name_checks(last_name):
+            break
+        
+        
+      case "2":
+        pass
+      case "3":
+        pass
+      case _:
+        print("Invalid choice")
 
-  
   # check haluuko vaihtaa puuttuu vielä ja tarkistusket
-  name = input("New name: ").strip().title()
-  email = input("New email: ").strip().title()
-  age = input("New age: ").strip()
+  # name = input("New name: ").strip().title()
+  # email = input("New email: ").strip().title()
+  # age = input("New age: ").strip()
 
-  name = db_person["name"]
-  email = db_person["email"]
-  age = db_person["age"]
+  # name = db_person["name"]
+  # email = db_person["email"]
+  # age = db_person["age"]
 
 def edit_gifts():
   pass
@@ -209,12 +254,11 @@ def print_commands()->None:
   "\t2) " + "List gifts" + "\n" \
   "\t3) " + "Add a person" + "\n" \
   "\t4) " + "Add a gift" + "\n"
-  
   )
 
 def test():
   print("TEST PROGRAM")
-  add_person()
+  edit_people()
 
 def main():
   print("Welcome! 🎅🎁🎄 This is my practise project ~")
@@ -238,21 +282,10 @@ def main():
         add_gift() 
       case "5":
         edit_people()
-      
       case _:
         print("Invalid choice")
 
-
-
-  # list_gifts()
-  # list_people()
-
-  # gifts = DB_NAME.gifts.find()
-
-  # for gift in gifts:
-  #   print(gift["title"])
-
-
 if __name__ == "__main__":
-  main()
   # test()
+  main()
+  
