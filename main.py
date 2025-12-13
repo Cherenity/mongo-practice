@@ -1,4 +1,6 @@
 from pymongo import MongoClient
+from bson.objectid import ObjectId
+from bson.errors import InvalidId
 
 #GLOBAL VARIABLES
 MONGO_URI = MongoClient('mongodb://localhost:27017/')
@@ -103,6 +105,26 @@ def get_valid_name(prompt1: str = "Enter first name: ",
   print(f"Full name is: {full_name}")
   return full_name
 
+def get_valid_email(prompt: str = "Enter email: ") -> str:
+  while True:
+      email = input(prompt).strip().lower()
+      if email_check(email):
+        break
+  return email
+
+def get_valid_age(prompt: str = "Enter age: ") -> int:
+    while True:
+      age = input(prompt)
+      try:
+        age = int(age)
+        if 0 <= age <= 100:
+          break
+        else:
+          print("Age needs to be a number between 0-100")  
+      except ValueError:
+        print("Age needs to be a number between 0-100")
+    return age
+
 def confirm_choice(print_text: str) -> bool:
   print(print_text)
   while True:
@@ -113,27 +135,13 @@ def confirm_choice(print_text: str) -> bool:
       return False 
     else:
       print("Invalid choice")
-  
 
 def add_person()->None:
   cancel_message = "Person was not added..."
   full_name = get_valid_name()
+  email = get_valid_email()
+  age = get_valid_age()
 
-  while True:
-    email = input("Enter email: ").strip().lower()
-    if email_check(email):
-      break
-
-  while True:
-    age = input("Enter age: ")
-    try:
-      age = int(age)
-      if 0 <= age <= 100:
-        break
-      else:
-        print("Age needs to be a number between 0-100")  
-    except ValueError:
-      print("Age needs to be a number between 0-100")
 
   person = {
     "name" : full_name, 
@@ -161,11 +169,9 @@ def add_person()->None:
     result = MYDB.people.insert_one(person)
     print(result.inserted_id)
  
-
 #BONUS
 def assign_gifts():
   pass
-
 
 #READ ------------------------------------------------- 
 def list_gifts()->None:
@@ -182,17 +188,16 @@ def list_gifts()->None:
       print(f"{'Available':>10}: {gift['available']}")
       print()
 
-def list_people_print():
+def list_people_print()->None:
   print(
 """
-Commands:
+List/search people commands:
         0) Quit listing
         1) List all
         2) Search by full name
         3) Search by partial name
 """
 )
-
 
 def person_print(person:dict) -> None:
   print(f"{'ID':>10}: {person['_id']}")
@@ -242,81 +247,92 @@ def list_people() -> None:
       case _:
         print("Invalid choice")
 
-
 def list_assigned_gifts():
   ## BONUS | needs aggregated function
   pass
 
-#------------------------------------------------- 
-
 #UPDATE ------------------------------------------------- 
-def edit_people_print():
-    print(
+def edit_person_menu_prints(person: dict)->None:
+  print("\nCurrent person details: ")
+  person_print(person)
+  print(
 """
-Commands:
-        0) Quit editing
+Edit person commands:
+        0) Nothing
         1) Edit name
         2) Edit email
         3) Edit age
-"""
-)
-
+""")
 
 def edit_person():
-  # email = input("Anna henkilön sähköpostiosoite: ")
-  # db_person = MYDB.people.find_one({"email": email})
-  # if not db_person:
-  #   print("No person with that email found")
-  #   return
 
-  while True:
-    edit_people_print()
-    choice = input("What do you want to edit? ").strip()
+  choice = confirm_choice("Do you want to list/search people first?")
+  if choice:
+    list_people()
+  
+  db_person = None
+  # TODO: search where you can choose wich person to edit instead of typing person ID
 
-    match choice:
-      case "0":
-        break
-      case "1":
-            name = get_valid_name()
-            print(name)
-            break    
-      case "2":
-        pass
-      case "3":
-        pass
-      case _:
-        print("Invalid choice")
+  person_id_to_find = input("Please give a person ID to find: ")
 
-  # check haluuko vaihtaa puuttuu vielä ja tarkistusket
-  # name = input("New name: ").strip().title()
-  # email = input("New email: ").strip().title()
-  # age = input("New age: ").strip()
+  try:
+    db_person = MYDB.people.find_one({ "_id": ObjectId(person_id_to_find) })
+  except InvalidId:
+    print("Invalid ID format")
+    return
+  
+  if db_person is None: 
+    print("No person with that ID found")
+    return
 
-  # name = db_person["name"]
-  # email = db_person["email"]
-  # age = db_person["age"]
+  edit_person_menu_prints(db_person)
+  edit_choice = input("What do you want to edit? ").strip()
+
+  match edit_choice:
+    case "0":
+      print("No changes made.")
+    case "1":
+      # TODO: separate first and last name editing later
+      new_name = get_valid_name()
+      MYDB.people.update_one(
+        { "_id": ObjectId(person_id_to_find) },
+        { "$set": { "name": new_name } }
+      )   
+    case "2":
+      new_email = get_valid_email("Enter a new email adress: ")
+      MYDB.people.update_one(
+        { "_id": ObjectId(person_id_to_find) },
+        { "$set": { "email": new_email } }
+      )
+    case "3":
+      new_age = get_valid_age("Enter a new age: ")
+      MYDB.people.update_one(
+        { "_id": ObjectId(person_id_to_find) },
+        { "$set": { "age": new_age } }
+      )
+    case _:
+      print("Invalid choice")
+
 
 def edit_gifts():
   pass
 
-#------------------------------------------------- 
-
-#DELETE
-#------------------------------------------------- 
+#DELETE------------------------------------------------- 
 def delete_gift():
   pass
 
 def delete_person():
-  pass
+  choice = confirm_choice("Do you want to list/search people first?")
+  if choice:
+    list_people()
 
-#------------------------------------------------- 
 
 def print_commands()->None:
   print(
 """
 Commands:
         0) Exit program
-        1) List people
+        1) List/search people
         2) List gifts
         3) Add a person
         4) Add a gift
@@ -329,7 +345,7 @@ Commands:
 
 def test():
   list_people_print()
-  edit_people_print()
+  edit_person_menu_prints()
   print_commands()
 
 def main():
