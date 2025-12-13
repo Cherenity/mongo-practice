@@ -111,8 +111,7 @@ def confirm_choice(print_text: str) -> bool:
   
 
 def add_person()->None:
-  cancel_message = "Person creation was cancelled..."
-  
+  cancel_message = "Person was not added..."
   full_name = get_valid_name()
 
   while True:
@@ -178,7 +177,6 @@ def list_gifts()->None:
       print(f"{'Available':>10}: {gift['available']}")
       print()
 
-
 def list_people()->None:
   people = list(MYDB.people.find())
   print(len(people))
@@ -211,7 +209,7 @@ def edit_people_print():
   )
 
 
-def edit_people():
+def edit_person():
   # email = input("Anna henkilön sähköpostiosoite: ")
   # db_person = MYDB.people.find_one({"email": email})
   # if not db_person:
@@ -226,16 +224,9 @@ def edit_people():
 
     match choice:
       case "1":
-        while True:
-          first_name = input("Enter first name: ").strip().title()
-          if name_check(first_name):
-            break
-        while True:
-          last_name = input("Enter first name: ").strip().title()
-          if name_check(last_name):
-            break
-        
-        
+            name = get_valid_name()
+            print(name)
+            break    
       case "2":
         pass
       case "3":
@@ -273,12 +264,16 @@ def print_commands()->None:
   "\t1) " + "List people"  + "\n"\
   "\t2) " + "List gifts" + "\n" \
   "\t3) " + "Add a person" + "\n" \
-  "\t4) " + "Add a gift" + "\n"
+  "\t4) " + "Add a gift" + "\n" \
+  "\t5) " + "Edit person details" + "\n" \
+  "\t6) " + "Edit gift details" + "\n" \
+  "\t7) " + "Delete a person" + "\n" \
+  "\t8) " + "Delete a gift" + "\n" 
   )
 
 def test():
   print("TEST PROGRAM")
-  edit_people()
+  edit_person()
 
 def main():
   print("Welcome! 🎅🎁🎄 This is my practise project ~")
@@ -301,7 +296,7 @@ def main():
       case "4":
         add_gift() 
       case "5":
-        edit_people()
+        edit_person()
       case _:
         print("Invalid choice")
 
