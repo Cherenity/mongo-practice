@@ -9,38 +9,115 @@ MYDB = MONGO_URI['christmas_gifts_db']
 FORBIDDEN_CHARS = '!@#$%^&*()_=+[]}{|\\:;\"<>,.?/'
 FORBIDDEN_START_CHARS = "'_-"
 
+GIFT_CATEGORIES = [
+    "Toys",
+    "Books",
+    "Electronics",
+    "Clothes",
+    "Games",
+    "Home",
+    "Other"
+]
+
+
 """CRUD = Create, Read, Update, Delete"""
 
 # ✔️ Using an ObjectId object will work Esimerkki
 # db.books.find_one({ "_id": ObjectId(book_id_to_find) })
 
 #CREATE
-#------------------------------------------------- 
-def title_checks():
+#-------------------------------------------------
+def get_valid_title()->str:
+  while True:
+    title = input("Gift title: ").strip()
+    if len(title) < 2:
+      print("Title is too short.")
+      continue
+
+    if len(title) > 50:
+      print("Title is too long")
+      continue
+
+    if title.isdigit():
+      print("Title cannot be numbers")
+      continue
+
+    if title:
+      break
+    print("Title cannot be empty.")
+  return title
+
+def get_valid_price() -> float:
+  while True:
+    try:
+      price = float(input("Price: ").strip())
+      if price < 0:
+        print("Price must be 0 or higher.")
+        continue
+
+      if price > 10000:
+        print("Price must be under 10000.")
+        continue
+
+      return round(price, 2)
+
+    except ValueError:
+      print("Please enter a valid number.")
+
+def get_valid_category() -> str:
+  while True:
+    choice = confirm_choice("", "List all categories? (y/n): ")
+    if choice:
+      for category in sorted(GIFT_CATEGORIES):
+        print(category)
+
+    category = input("Category: ").strip().capitalize()
+
+    if category in GIFT_CATEGORIES:
+      return category
+    else:
+      print("Invalid category. Please try again.")
+
+def get_valid_availability() -> bool:
+  while True:
+    value = input("Is available (true/false): ").strip().lower()
+    if value in ("true", "t", "yes", "y", "1"):
+      return True
+
+    if value in ("false", "f", "no", "n", "0"):
+      return False
+
+    print("Please enter True or False.")
+
+def get_valid_available():
   pass
-def price_checks():
-  pass
 
-def add_gift():
-  gift = {"title" : "", "price" : "", "category" : "", "available": ""}
+def add_gift() -> None:
+  title = get_valid_title()
+  price = get_valid_price()
+  category = get_valid_category()
+  available = get_valid_availability()
 
-  title = input("Gift title: ")
-  price = float(input("Price: "))
-  category = input("Category: ")
-  available = input("Is available, please enter True or False; ")
+  gift = {
+    "title" : title, 
+    "price" : price, 
+    "category" : category, 
+    "available": available
+    }
 
-  is_title = MYDB.people.find_one({"title": gift["title"]})
-  is_price = MYDB.people.find_one({"price": gift["price"]})
+  is_title = MYDB.gifts.find_one({"title": gift["title"]})
+  is_price = MYDB.gifts.find_one({"price": gift["price"]})
   if is_title and is_price:
     print("There is a gift with same name and price")
   else:
-    result = MYDB.people.insert_one(gift)
+    result = MYDB.gifts.insert_one(gift)
+    print(f"Gift added with id: {result.inserted_id}")
 
 #CAN BE MODIFIED LATER (add ❌ ?)
 def name_check(name: str, is_first_name: bool | None = None) -> bool:
   if not name:
       print("First name cannot be empty")
-      return False  
+      return False
   if any(char.isdigit() for char in name):
       print("No numbers allowed in first name")
       return False
@@ -65,7 +142,7 @@ def email_check(email: str) -> bool:
   if email.count("@") != 1:
     print("Email address must contain exactly one '@' symbol.")
     return False
-  
+
   local, domain = email.split("@")
 
   if not local:
@@ -77,7 +154,7 @@ def email_check(email: str) -> bool:
   if "." not in domain:
     print("Domain must contain a dot (e.g. .com, .fi).")
     return False
-  
+
   domain_parts = domain.split(".")
 
   if any(part == "" for part in domain_parts):
@@ -87,19 +164,19 @@ def email_check(email: str) -> bool:
   print("✅ Email is valid")
   return True
 
-def get_valid_name(prompt1: str = "Enter first name: ", 
+def get_valid_name(prompt1: str = "Enter first name: ",
                    prompt2: str = "Enter last name: "
                    ) -> str:
   while True:
     first_name = input(prompt1).strip().title()
     if name_check(first_name, True):
       break
-    
+
   while True:
     last_name = input(prompt2).strip().title()
     if name_check(last_name, False):
       break
-  
+
   full_name = first_name + " " + last_name
   print(f"Full name is: {full_name}")
   return full_name
@@ -119,7 +196,7 @@ def get_valid_age(prompt: str = "Enter age: ") -> int:
         if 0 <= age <= 100:
           break
         else:
-          print("Age needs to be a number between 0-100")  
+          print("Age needs to be a number between 0-100")
       except ValueError:
         print("Age needs to be a number between 0-100")
     return age
@@ -128,13 +205,13 @@ def confirm_choice(print_text:str = "", choice_text:str = "Are you satisfied wit
 
   if print_text:
     print(print_text)
-  
+
   while True:
     choice = input(choice_text).strip().lower()
     if choice == "y":
       return True
     elif choice == "n":
-      return False 
+      return False
     else:
       print("Invalid choice")
 
@@ -145,11 +222,11 @@ def add_person() -> None:
   age = get_valid_age()
 
   person = {
-    "name" : full_name, 
-    "email" : email, 
+    "name" : full_name,
+    "email" : email,
     "age" : age
     }
-  
+
   person_summary = (
     f"{'Name':<5}: {person['name']}\n"
     f"{'Email':<5}: {person['email']}\n"
@@ -161,7 +238,7 @@ def add_person() -> None:
   if not confirmed:
     print(cancel_message)
     return
-  
+
   is_existing = MYDB.people.find_one({"email": person["email"]})
 
   if is_existing:
@@ -169,12 +246,20 @@ def add_person() -> None:
   else:
     result = MYDB.people.insert_one(person)
     print(result.inserted_id)
- 
+
 #BONUS
 def assign_gifts():
   pass
 
-#READ ------------------------------------------------- 
+#READ -------------------------------------------------
+
+def gift_print(gift:dict) -> None:
+    print(f"{'ID':>10}: {gift['_id']}")
+    print(f"{'Title':>10}: {gift['title']}")
+    print(f"{'Price':>10}: {gift['price']}")
+    print(f"{'Cateory':>10}: {gift['category']}")
+    print(f"{'Available':>10}: {gift['available']}")
+
 def list_gifts()->None:
   gifts = list(MYDB.gifts.find())
   if not gifts:
@@ -182,11 +267,7 @@ def list_gifts()->None:
   else:
     print("Gits\n")
     for gift in gifts:
-      print(f"{'ID':>10}: {gift['_id']}")
-      print(f"{'Title':>10}: {gift['title']}")
-      print(f"{'Price':>10}: {gift['price']}")
-      print(f"{'Cateory':>10}: {gift['category']}")
-      print(f"{'Available':>10}: {gift['available']}")
+      gift_print(gift)
       print()
 
 def list_people_print()->None:
@@ -211,7 +292,7 @@ def list_people() -> None:
   if not people:
     print("No persons found in the database.")
     return
-  
+
   while True:
     list_people_print()
     choice = input("Choose an option: ").strip()
@@ -223,7 +304,7 @@ def list_people() -> None:
         print(f"Person count {len(people)}\n")
         for person in people:
           person_print(person)
-          print()  
+          print()
       case "2":
         print("First, complete the name check.")
         full_name = get_valid_name()
@@ -232,7 +313,7 @@ def list_people() -> None:
           print("No people found with the name " + full_name)
         else:
           print(f"Person count {len(filtered_people)}\n")
-          for person in filtered_people: 
+          for person in filtered_people:
             person_print(person)
             print()
       case "3":
@@ -242,7 +323,7 @@ def list_people() -> None:
           print(f"No name contains'{partial_name}'.")
         else:
           print(f"Person count {len(filtered_people)}\n")
-          for person in filtered_people: 
+          for person in filtered_people:
               person_print(person)
               print()
       case _:
@@ -252,7 +333,7 @@ def list_assigned_gifts():
   ## BONUS | needs aggregated function
   pass
 
-#UPDATE ------------------------------------------------- 
+#UPDATE -------------------------------------------------
 def edit_person_menu_prints(person: dict)->None:
   print("\nCurrent person details: ")
   person_print(person)
@@ -269,7 +350,7 @@ def edit_person():
   choice = confirm_choice("Do you want to list/search people first?")
   if choice:
     list_people()
-  
+
   db_person = None
   # TODO: search where you can choose wich person to edit instead of typing person ID
 
@@ -280,8 +361,8 @@ def edit_person():
   except InvalidId:
     print("Invalid ID format")
     return
-  
-  if db_person is None: 
+
+  if db_person is None:
     print("No person with that ID found")
     return
 
@@ -297,7 +378,7 @@ def edit_person():
       MYDB.people.update_one(
         { "_id": ObjectId(person_id_to_find) },
         { "$set": { "name": new_name } }
-      )   
+      )
     case "2":
       new_email = get_valid_email("Enter a new email adress: ")
       MYDB.people.update_one(
@@ -316,9 +397,20 @@ def edit_person():
 def edit_gifts():
   pass
 
-#DELETE------------------------------------------------- 
+#DELETE-------------------------------------------------
 def delete_gift():
-  pass
+  choice = confirm_choice("","Do you want to list all gifts first? (y/n):")
+  if choice:
+    list_gifts()
+  gift_id_to_find = input("Please give a gift ID to dekelete: ")
+  try:
+    db_gift = MYDB.gifts.find_one({ "_id": ObjectId(gift_id_to_find) })
+  except InvalidId:
+    print("Invalid ID format")
+    return
+  if db_gift is None:
+    print("No gift with that ID found")
+    return
 
 def delete_person():
   choice = confirm_choice("","Do you want to list/search people first? (y/n):")
@@ -330,17 +422,17 @@ def delete_person():
   except InvalidId:
     print("Invalid ID format")
     return
-  if db_person is None: 
+  if db_person is None:
     print("No person with that ID found")
     return
-  
+
   print("Person details: ")
   person_print(db_person)
 
   confirm = confirm_choice("","Delete this person? (y/n): ")
 
   if not confirm:
-    print("Nothing deleted.") 
+    print("Nothing deleted.")
 
   result = MYDB.people.delete_one({ "_id": ObjectId(person_id_to_find) })
 
@@ -348,8 +440,6 @@ def delete_person():
     print("Person deleted.")
   else:
     print("Delete failed.")
-
-
 
 def print_commands()->None:
   print(
@@ -363,20 +453,20 @@ Commands:
         5) Edit person details
         6) Edit gift details
         7) Delete a person
-        8) Delete a gift     
+        8) Delete a gift
 """
 )
 
 def test():
-  # pick_person_id_by_name()
-  pass
+  get_valid_availability()
+
 def main():
   print("Welcome! 🎅🎁🎄 This is my practise project ~")
 
   while True:
     print_commands()
     choice = input("Choose an option: ")
-    
+
     match choice:
       case "0":
         print("Exiting program...")
@@ -388,7 +478,7 @@ def main():
       case "3":
         add_person()
       case "4":
-        add_gift() 
+        add_gift()
       case "5":
         edit_person()
       case "6":
@@ -401,4 +491,3 @@ def main():
 if __name__ == "__main__":
   # test()
   main()
-  
