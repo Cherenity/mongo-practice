@@ -6,7 +6,7 @@
     A practice project for people and
     gift tracking. 🎄 🎅*  .  .       
     .   *    .   *  .   *   .      
-
+___
 **Course:** Introduction to NoSQL Databases - SOF012AS2AE-3001
 
 **Creator:** Jonna Isosaari
@@ -14,11 +14,10 @@
 This is a Python practice project for **CRUD operations** using **MongoDB** and my own **practice database**.
 
 At this stage, the project should include all the required features to pass the course. 
-
+___
 **Small demo gif**<br>
 <img src="demo.gif" alt="Short demo" width="300">
-<br>Additional improvements and personal features will be added later as I continue learning.
-
+___
 ### Current main commands:
   0) Exit program
   1) List/search people
@@ -29,8 +28,7 @@ At this stage, the project should include all the required features to pass the 
   6) Edit gift details
   7) Delete a person
   8) Delete a gift   
-
-
+___
 These are some features that I might add later. <br>+ More ideas💡will likely come up while testing the app.
 
 | Feature | Status |
@@ -42,11 +40,11 @@ These are some features that I might add later. <br>+ More ideas💡will likely 
 | View which gifts are assigned to each person | Will be added later |
 | Split the project into multiple `.py` files for better structure | Will be added later |
 | Code refactoring and cleanup | Will be added later |
-
+___
 **ER diagram**
 
 ![ER diagram](ER_diagram.png)
-
+___
 References:<br>
 
 *Emojis: 
