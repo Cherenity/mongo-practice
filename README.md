@@ -1,11 +1,24 @@
 # MongoDB Practice Project
 
+
+    ☃︎ ⋆  ❆ .ೃ ࿔*  𖠰 🎁 .𐙚  *  .
+    Welcome to Christmas Gifts DB! *   .
+    A practice project for people and
+    gift tracking. 🎄 🎅*  .  .       
+    .   *    .   *  .   *   .      
+
 **Course:** Introduction to NoSQL Databases - SOF012AS2AE-3001
 
 **Creator:** Jonna Isosaari
 
-This is a command line school practise project for CRUD
-methods in MongoDP and my own practise db.
+This is a Python practice project for **CRUD operations** using **MongoDB** and my own **practice database**.
+
+At this stage, the project should include all the required features to pass the course.
+
+**Small demo gif**
+![Short demo](demo.gif)
+
+<br>Additional improvements and personal features will be added later as I continue learning.
 
 ### Current main commands:
   0) Exit program
@@ -19,18 +32,20 @@ methods in MongoDP and my own practise db.
   8) Delete a gift   
 
 
-Will be implemented later:
+Here are some features that I may add later. More ideas will likely come up while testing the application. 
 
 | Feature | Status |
 |---|---|
-| Assign gifts | Will be implemented later |
-| List assigned gifts | Will be implemented later |
-
-
+| Ability to edit several fields at once for people and gifts, with a confirmation step | Will be added later |
+| Search people when editing or deleting, so you don’t need to remember ObjectId values | Will be added later |
+| More colors and clearer CLI output | Will be added later |
+| Assign gifts to people | Will be added later |
+| View which gifts are assigned to each person | Will be added later |
+| Split the project into multiple `.py` files for better structure | Will be added later |
+| Code refactoring and cleanup | Will added later |
 
 **ER diagram**
 ![ER diagram](ER_diagram.png)
-
 
 References:<br>
 
@@ -38,3 +53,5 @@ References:<br>
 https://gist.github.com/rxaviers/7360908*<br>
 *ASCII art inspired by: 
 https://emojicombos.com/christmas-tree*
+
+W3Schools Python MongoDB Materials
