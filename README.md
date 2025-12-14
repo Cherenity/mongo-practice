@@ -17,7 +17,6 @@ At this stage, the project should include all the required features to pass the 
 
 **Small demo gif**<br>
 <img src="demo.gif" alt="Short demo" width="300">
-
 <br>Additional improvements and personal features will be added later as I continue learning.
 
 ### Current main commands:
@@ -45,6 +44,7 @@ Here are some features that I may add later. More ideas will likely come up whil
 | Code refactoring and cleanup | Will added later |
 
 **ER diagram**
+
 ![ER diagram](ER_diagram.png)
 
 References:<br>
