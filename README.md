@@ -13,7 +13,7 @@
 
 This is a Python practice project for **CRUD operations** using **MongoDB** and my own **practice database**.
 
-At this stage, the project should include all the required features to pass the course.
+At this stage, the project should include all the required features to pass the course. 
 
 **Small demo gif**<br>
 <img src="demo.gif" alt="Short demo" width="300">
@@ -31,7 +31,7 @@ At this stage, the project should include all the required features to pass the 
   8) Delete a gift   
 
 
-Here are some features that I may add later. More ideas will likely come up while testing the application. 
+These are some features that I might add later. <br>+ More ideas💡will likely come up while testing the app.
 
 | Feature | Status |
 |---|---|
@@ -41,7 +41,7 @@ Here are some features that I may add later. More ideas will likely come up whil
 | Assign gifts to people | Will be added later |
 | View which gifts are assigned to each person | Will be added later |
 | Split the project into multiple `.py` files for better structure | Will be added later |
-| Code refactoring and cleanup | Will added later |
+| Code refactoring and cleanup | Will be added later |
 
 **ER diagram**
 
