@@ -15,8 +15,8 @@ This is a Python practice project for **CRUD operations** using **MongoDB** and 
 
 At this stage, the project should include all the required features to pass the course.
 
-**Small demo gif**
-![Short demo](demo.gif)
+**Small demo gif**<br>
+<img src="demo.gif" alt="Short demo" width="300">
 
 <br>Additional improvements and personal features will be added later as I continue learning.
 
