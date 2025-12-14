@@ -545,9 +545,6 @@ Commands:
 """
 )
 
-def test():
-  get_valid_availability()
-
 def christmas_welcome_art():
 
   art = Fore.BLUE + """ .   *  .  *   .
@@ -591,5 +588,4 @@ def main():
         print("Invalid choice")
 
 if __name__ == "__main__":
-  # test()
   main()
