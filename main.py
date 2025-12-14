@@ -1,6 +1,9 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
+from colorama import Fore, Style, init
+init(autoreset=True)
+
 
 #GLOBAL VARIABLES
 MONGO_URI = MongoClient('mongodb://localhost:27017/')
@@ -253,7 +256,7 @@ def gift_print(gift:dict) -> None:
     print(f"{'Available':>10}: {gift['available']}")
 
 def list_gifts() -> None:
-  gifts = list(MYDB.gifts.find())
+  gifts = list(MYDB.gifts.find()) #Ok for small datasets
   if not gifts:
     print("No gifts found")
   else:
@@ -280,14 +283,16 @@ def person_print(person:dict) -> None:
   print(f"{'Age':>10}: {person['age']}")
 
 def list_people() -> None:
-  people = list(MYDB.people.find())
+  people = list(MYDB.people.find()) #Ok for small datasets
+
   if not people:
     print("No persons found in the database.")
     return
 
   while True:
     list_people_print()
-    choice = input("Choose an option: ").strip()
+    print(Fore.CYAN + Style.BRIGHT + "Choose an option: ", end="")
+    choice = input().strip()
 
     match choice:
       case "0":
@@ -510,10 +515,10 @@ def print_commands()-> None:
 """
 Commands:
         0) Exit program
-        1) List/search people
+        1) List/search people 
         2) List gifts
         3) Add a person
-        4) Add a gift 🎁
+        4) Add a gift
         5) Edit person details
         6) Edit gift details
         7) Delete a person
@@ -524,10 +529,9 @@ Commands:
 def test():
   get_valid_availability()
 
-
 def christmas_welcome_art():
 
-  art = r""" .   *  .  *   .
+  art = Fore.BLUE + """ .   *  .  *   .
     ☃︎ ⋆  ❆ .ೃ ࿔*  𖠰 🎁 .𐙚  *  .
     Welcome to GiftDB! *   .
     A practice project for people and
@@ -541,7 +545,9 @@ def main():
 
   while True:
     print_commands()
-    choice = input("Choose an option: ")
+
+    print(Fore.CYAN + Style.BRIGHT + "Choose an option: ", end="")
+    choice = input().strip()
 
     match choice:
       case "0":
