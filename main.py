@@ -338,7 +338,7 @@ Edit person commands:
 """)
 
 def edit_person() -> None:
-  choice = confirm_choice("Do you want to list/search people first?")
+  choice = confirm_choice("", "Do you want to list/search people first? (y/n): ")
   if choice:
     list_people()
 
@@ -513,7 +513,7 @@ Commands:
         1) List/search people
         2) List gifts
         3) Add a person
-        4) Add a gift
+        4) Add a gift 🎁
         5) Edit person details
         6) Edit gift details
         7) Delete a person
@@ -524,8 +524,20 @@ Commands:
 def test():
   get_valid_availability()
 
+
+def christmas_welcome_art():
+
+  art = r""" .   *  .  *   .
+    ☃︎ ⋆  ❆ .ೃ ࿔*  𖠰 🎁 .𐙚  *  .
+    Welcome to GiftDB! *   .
+    A practice project for people and
+    gift tracking. 🎄 🎅*  .  .       
+    .   *    .   *  .   *   .      """
+  print(art)
+
+
 def main():
-  print("Welcome! 🎅🎁🎄 This is my practise project ~")
+  christmas_welcome_art()
 
   while True:
     print_commands()
