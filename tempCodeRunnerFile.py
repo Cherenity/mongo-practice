@@ -1,1 +1,0 @@
-print(person.values())
