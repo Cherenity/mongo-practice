@@ -43,6 +43,8 @@ def get_valid_title()->str:
     if title:
       break
     print("Title cannot be empty.")
+  
+  print(f"✅ Title: {title}")
   return title
 
 def get_valid_price() -> float:
@@ -56,8 +58,9 @@ def get_valid_price() -> float:
       if price > 10000:
         print("Price must be under 10000.")
         continue
-
-      return round(price, 2)
+      price = round(price, 2)
+      print(f"✅ Price: {price}")
+      return price
 
     except ValueError:
       print("Please enter a valid number.")
@@ -72,6 +75,7 @@ def get_valid_category() -> str:
     category = input("Category: ").strip().capitalize()
 
     if category in GIFT_CATEGORIES:
+      print(f"✅ Category: {category}")
       return category
     else:
       print("Invalid category. Please try again.")
@@ -80,17 +84,18 @@ def get_valid_availability() -> bool:
   while True:
     value = input("Is available (true/false): ").strip().lower()
     if value in ("true", "t", "yes", "y", "1"):
+      print("✅ Availability: True")
       return True
 
     if value in ("false", "f", "no", "n", "0"):
+      print("✅ Availability: False")
       return False
 
     print("Please enter True or False.")
 
-def get_valid_available():
-  pass
-
 def add_gift() -> None:
+  cancel_message = "Gift was not added..."
+
   title = get_valid_title()
   price = get_valid_price()
   category = get_valid_category()
@@ -108,8 +113,22 @@ def add_gift() -> None:
   if is_title and is_price:
     print("There is a gift with same name and price")
   else:
-    result = MYDB.gifts.insert_one(gift)
-    print(f"Gift added with id: {result.inserted_id}")
+    
+    gift_summary = (
+    f"{'Title':<5}: {gift['title']}\n"
+    f"{'Price':<5}: {gift['price']}\n"
+    f"{'Category':<5}: {gift['category']}\n"
+    f"{'Availability':<5}: {gift['available']}"
+    )
+    
+    confirmed = confirm_choice(f"\nAdd a new gift:\n{gift_summary}\n")
+
+    if confirmed:
+      result = MYDB.gifts.insert_one(gift)
+      print(Fore.GREEN + f"Gift added with id: {result.inserted_id}")
+    else:
+      print(cancel_message)
+      return
 
 def name_check(name: str, is_first_name: bool | None = None) -> bool:
   if not name:
@@ -196,10 +215,10 @@ def get_valid_age(prompt: str = "Enter age: ") -> int:
           print("Age needs to be a number between 0-100")
       except ValueError:
         print("Age needs to be a number between 0-100")
+    print("✅ Age is valid")
     return age
 
 def confirm_choice(print_text:str = "", choice_text:str = "Are you satisfied with your choice? (y/n): ") -> bool:
-
   if print_text:
     print(print_text)
 
@@ -242,7 +261,7 @@ def add_person() -> None:
     print("There is a person with this email already")
   else:
     result = MYDB.people.insert_one(person)
-    print(result.inserted_id)
+    print(Fore.GREEN + f"Person added with id: {result.inserted_id}")
 
 # LATER: Assign gifts using bulk insert (reset collection first) maybe
 def assign_gifts():
@@ -477,9 +496,9 @@ def delete_gift() -> None:
   result = MYDB.gifts.delete_one({ "_id": ObjectId(gift_id_to_find) })
 
   if result.deleted_count == 1:
-    print("Gift deleted.")
+    print(Fore.GREEN + "Gift deleted.")
   else:
-    print("Delete failed.")
+    print(Fore.RED + "Delete failed.")
 
 def delete_person() -> None:
   choice = confirm_choice("","Do you want to list/search people first? (y/n):")
@@ -506,9 +525,9 @@ def delete_person() -> None:
   result = MYDB.people.delete_one({ "_id": ObjectId(person_id_to_find) })
 
   if result.deleted_count == 1:
-    print("Person deleted.")
+    print(Fore.GREEN + "Person deleted.")
   else:
-    print("Delete failed.")
+    print(Fore.RED + "Delete failed.")
 
 def print_commands()-> None:
   print(
@@ -533,12 +552,11 @@ def christmas_welcome_art():
 
   art = Fore.BLUE + """ .   *  .  *   .
     ☃︎ ⋆  ❆ .ೃ ࿔*  𖠰 🎁 .𐙚  *  .
-    Welcome to GiftDB! *   .
+    Welcome to Christmas Gifts DB! *   .
     A practice project for people and
     gift tracking. 🎄 🎅*  .  .       
     .   *    .   *  .   *   .      """
   print(art)
-
 
 def main():
   christmas_welcome_art()
